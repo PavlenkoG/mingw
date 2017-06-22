@@ -2,6 +2,7 @@
 #include <Commdlg.h>
 #include <math.h>
 #include "resource.h"
+#include <winsock2.h>
 const int R = 100;
 static int check1, check2, check3, check4, check5, check6;
 static char barAddr1[8];
@@ -26,7 +27,7 @@ LRESULT CALLBACK MainWndProc(HWND hWnd,  UINT msg, WPARAM wParam, LPARAM lParam)
 
 			ofn.lStructSize = sizeof(ofn); // SEE NOTE BELOW
 			ofn.hwndOwner = hWnd;
-			ofn.lpstrFilter = "Text Files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0";
+			ofn.lpstrFilter = "Text Files (*.txt)\0.txt\0All Files (*.*)\0*.*\0";
 			ofn.lpstrFile = szFileName;
 			ofn.nMaxFile = MAX_PATH;
 			ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
@@ -46,7 +47,7 @@ LRESULT CALLBACK MainWndProc(HWND hWnd,  UINT msg, WPARAM wParam, LPARAM lParam)
 			InvalidateRect(hWnd, NULL, TRUE);
 			break;
 		case WM_PAINT:
-				hdc = BeginPaint (hWnd, &ps);
+				/*hdc = BeginPaint (hWnd, &ps);
 				a = sx/2;
 				b = sy/2;
 				SelectObject (hdc,hpen1);
@@ -75,7 +76,7 @@ LRESULT CALLBACK MainWndProc(HWND hWnd,  UINT msg, WPARAM wParam, LPARAM lParam)
 				//}
 				//Rectangle (hdc, sx/4, sy/4, sx*3/4, sy*3/4);
 				//Ellipse (hdc, sx/3, sy/4, sx*2/3, sy*3/4);
-				EndPaint (hWnd,&ps);
+				EndPaint (hWnd,&ps);*/
 				break;
 			case WM_COMMAND:
 			{
