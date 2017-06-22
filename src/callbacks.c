@@ -3,7 +3,8 @@
 #include <math.h>
 #include "resource.h"
 const int R = 100;
-static int check2;
+static int check1, check2, check3, check4, check5, check6;
+static char barAddr1[8];
 // Window procedure for our main window.
 LRESULT CALLBACK MainWndProc(HWND hWnd,  UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -167,9 +168,32 @@ BOOL CALLBACK ToolDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
 					DestroyWindow(hWnd);
                 break;
                 case IDC_BAR1_EN:
-                	check2 = ~ check2;
-                	SendDlgItemMessage(hWnd, IDC_BAR1_EN, BM_SETCHECK, check2, 0);
+					SendDlgItemMessage(hWnd, IDC_BAR1_TXT, EM_SETREADONLY, check1, 0);
+                	check1 = ~ check1;
+                	SendDlgItemMessage(hWnd, IDC_BAR1_EN, BM_SETCHECK, check1, 0);
+					GetDlgItemText(hWnd, IDC_BAR1_TXT, barAddr1, 8);
 				break;
+                case IDC_BAR2_EN:
+                	check2 = ~ check2;
+                	SendDlgItemMessage(hWnd, IDC_BAR2_EN, BM_SETCHECK, check2, 0);
+				break;
+                case IDC_BAR3_EN:
+                	check3 = ~ check3;
+                	SendDlgItemMessage(hWnd, IDC_BAR3_EN, BM_SETCHECK, check3, 0);
+				break;
+                case IDC_BAR4_EN:
+                	check4 = ~ check4;
+                	SendDlgItemMessage(hWnd, IDC_BAR4_EN, BM_SETCHECK, check4, 0);
+				break;
+                case IDC_BAR5_EN:
+                	check5 = ~ check5;
+                	SendDlgItemMessage(hWnd, IDC_BAR5_EN, BM_SETCHECK, check5, 0);
+				break;
+                case IDC_BAR6_EN:
+                	check6 = ~ check6;
+                	SendDlgItemMessage(hWnd, IDC_BAR6_EN, BM_SETCHECK, check6, 0);
+				break;
+
             }
         break;
         default:
