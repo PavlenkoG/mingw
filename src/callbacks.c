@@ -10,6 +10,7 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		HDC hdc;
 		int a, b, x, y;
 		static int sx,sy;
+		static HPEN hpen1, hpen2;
 		switch (msg)
 		{
 			case WM_SIZE:
@@ -21,11 +22,13 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					hdc = BeginPaint (hWnd, &ps);
 					a = sx/2;
 					b = sy/2;
+					SelectObject (hdc,hpen1);
 					MoveToEx(hdc,0,b,NULL);
 					LineTo (hdc,sx,b);
 					MoveToEx(hdc,a,0,NULL);
 					LineTo(hdc,a,sy);
 					MoveToEx(hdc,a,b,NULL);
+					SelectObject (hdc,hpen2);
 					for (float angle = 0.0; angle < 2*M_PI; angle += 0.1)
 					{
 						x = a + R*(1 - cos(angle))*cos(angle);
@@ -88,6 +91,8 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 				case WM_CREATE:
 				{
+					hpen1 = CreatePen(PS_SOLID, 2, RGB(0, 0, 255));
+					hpen2 = CreatePen(PS_SOLID, 2, RGB(255, 0, 0));
 					hInstance = ((LPCREATESTRUCT) lParam)->hInstance;
 					return 0;
 				}
