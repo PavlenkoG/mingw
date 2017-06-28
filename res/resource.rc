@@ -70,22 +70,55 @@ BEGIN
   DEFPUSHBUTTON    "OK",IDOK,90,46,50,14,WS_GROUP
 END
 
-IDD_TOOLBAR DIALOGEX 0, 0, 200, 170
+IDD_TOOLBAR DIALOGEX 0, 0, 194, 345
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
 EXSTYLE WS_EX_TOOLWINDOW
-CAPTION "My Dialog Toolbar"
+CAPTION "Test vectors settings"
 FONT 8, "MS Sans Serif"
 BEGIN
-    PUSHBUTTON      "&Press This Button",IDC_PRESS,7,7,84,14
-    PUSHBUTTON      "&Or This One",IDC_OTHER,7,31,84,14
-    PUSHBUTTON      "Close", IDC_CLOSE_SETT,7,56,84,14
-    CHECKBOX        "Bar 1 Enable", IDC_BAR1_EN, 7, 80, 84, 14 
-    CHECKBOX        "Bar 2 Enable", IDC_BAR2_EN, 7, 94, 84, 14 
-    CHECKBOX        "Bar 3 Enable", IDC_BAR3_EN, 7, 108, 84, 14 
-    CHECKBOX        "Bar 4 Enable", IDC_BAR4_EN, 7, 122, 84, 14 
-    CHECKBOX        "Bar 5 Enable", IDC_BAR5_EN, 7, 136, 84, 14 
-    CHECKBOX        "Bar 6 Enable", IDC_BAR4_EN, 7, 150, 84, 14 
-    EDITTEXT        IDC_BAR1_TXT, 100, 80, 84, 14
+    //PUSHBUTTON      "&Press This Button",IDC_PRESS,7,7,84,14
+    //PUSHBUTTON      "&Or This One",IDC_OTHER,7,31,84,14
+
+    // PCIExpress Settings
+    CTEXT           "PCIExpress settings", 106,1,7,184,14
+    
+    CHECKBOX        "Bar 1 Enable", IDC_BAR1_EN, 7, 23, 68, 14 
+    CHECKBOX        "Bar 2 Enable", IDC_BAR2_EN, 7, 39, 68, 14 
+    CHECKBOX        "Bar 3 Enable", IDC_BAR3_EN, 7, 55, 68, 14 
+    CHECKBOX        "Bar 4 Enable", IDC_BAR4_EN, 7, 71, 68, 14 
+    CHECKBOX        "Bar 5 Enable", IDC_BAR5_EN, 7, 87, 68, 14 
+    CHECKBOX        "Bar 6 Enable", IDC_BAR6_EN, 7, 103, 68, 14 
+
+    EDITTEXT        IDC_BAR1_TXT, 104, 23, 84, 14
+    EDITTEXT        IDC_BAR2_TXT, 104, 39, 84, 14
+    EDITTEXT        IDC_BAR3_TXT, 104, 55, 84, 14
+    EDITTEXT        IDC_BAR4_TXT, 104, 71, 84, 14
+    EDITTEXT        IDC_BAR5_TXT, 104, 87, 84, 14
+    EDITTEXT        IDC_BAR6_TXT, 104, 103, 84, 14
+
+    CHECKBOX        "Interrupt Enable", IDC_INT_ENA, 7, 129, 68, 14
+    LTEXT           "LSB Address Register",          102,7,145,168,14
+    EDITTEXT        IDC_LSB_AR_TXT, 7, 161, 84, 14
+    LTEXT           "MSB Address Register", 103,7,177,168,14
+    EDITTEXT        IDC_MSB_AR_TXT, 7, 193, 84,14
+    LTEXT           "Message Data", 104, 104, 145, 168, 14
+    EDITTEXT        IDC_MSG_TXT, 104, 161, 84,14
+
+    CTEXT           "Test vectors settings", 107,1,220,184,14
+
+    CHECKBOX        "Write 32b Ena", IDC_WR32_ENA, 7,240, 68,14
+    CHECKBOX        "Write 16b Ena", IDC_WR16_ENA, 7,256, 68,14
+    CHECKBOX        "Write 8b Ena", IDC_WR8_ENA, 7,272, 68,14
+    CHECKBOX        "Write 32 burst Ena", IDC_WRBR_ENA, 7,288, 70,14
+    CHECKBOX        "Channel 1 Ena", IDC_CH1_ENA, 104,240, 68,14
+    CHECKBOX        "Channel 2 Ena", IDC_CH2_ENA, 104,256, 68,14
+
+    LTEXT           "Vectors quantity", 108, 106,272,68,14
+    EDITTEXT        IDC_VECT_QNTY_TXT, 104, 288, 84,14
+
+    PUSHBUTTON      "Apply", IDC_CLOSE_SETT,104,319,68,14
+
+    //Testbench Settings
 
 END
 
