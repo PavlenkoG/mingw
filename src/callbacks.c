@@ -1,11 +1,13 @@
 #include "callbacks.h"
+#include <commctrl.h>
 #include <Commdlg.h>
 #include <math.h>
 #include "resource.h"
 #include <winsock2.h>
-const int R = 100;
-static int check1, check2, check3, check4, check5, check6;
-static char barAddr1[8];
+#include <vectors.h>
+//const int R = 100;
+
+static struct tStimSetup StimSetup;
 // Window procedure for our main window.
 LRESULT CALLBACK MainWndProc(HWND hWnd,  UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -18,34 +20,36 @@ LRESULT CALLBACK MainWndProc(HWND hWnd,  UINT msg, WPARAM wParam, LPARAM lParam)
 	static HPEN hpen1, hpen2;
 	switch (msg)
 	{
+		OPENFILENAME ofn;
+		char szFileName[MAX_PATH] = "";
 		case WM_LBUTTONDOWN:
 		{
-			OPENFILENAME ofn;
-			char szFileName[MAX_PATH] = "";
-
-			ZeroMemory(&ofn, sizeof(ofn));
-
-			ofn.lStructSize = sizeof(ofn); // SEE NOTE BELOW
-			ofn.hwndOwner = hWnd;
-			ofn.lpstrFilter = "Text Files (*.txt)\0.txt\0All Files (*.*)\0*.*\0";
-			ofn.lpstrFile = szFileName;
-			ofn.nMaxFile = MAX_PATH;
-			ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
-			ofn.lpstrDefExt = "txt";
-
-			if(GetOpenFileName(&ofn))
-			{
-				LoadTextFileToEdit( hWnd, szFileName);
-			}
 			//LoadTextFileToEdit();
+			break;
 		}
-		break;
 
 		case WM_SIZE:
+		{
+			extern HWND hTwindow;
+			extern HWND hGwindow;
+            RECT rcClient;
+			extern HWND hTool;
 			sx = LOWORD(lParam);
 			sy = HIWORD(lParam);
 			InvalidateRect(hWnd, NULL, TRUE);
+			MoveWindow(hTwindow,0,0,sx,sy+20,TRUE);
+			UpdateWindow(hTwindow);
+			MoveWindow(hTool,0,0,sx,sy+20,TRUE);
+			UpdateWindow(hTool);
+
+            // Calculate remaining height and size edit
+
+            GetClientRect(hWnd, &rcClient);
+
+            hGwindow = GetDlgItem(hWnd, IDC_MAIN_MDI);
+            SetWindowPos(hGwindow, NULL, 0, 30, rcClient.right, rcClient.bottom-30, SWP_NOZORDER);
 			break;
+		}
 		case WM_PAINT:
 				/*hdc = BeginPaint (hWnd, &ps);
 				a = sx/2;
@@ -76,7 +80,8 @@ LRESULT CALLBACK MainWndProc(HWND hWnd,  UINT msg, WPARAM wParam, LPARAM lParam)
 				//}
 				//Rectangle (hdc, sx/4, sy/4, sx*3/4, sy*3/4);
 				//Ellipse (hdc, sx/3, sy/4, sx*2/3, sy*3/4);
-				EndPaint (hWnd,&ps);*/
+				EndPaint (hWnd,&ps);
+				*/
 				break;
 			case WM_COMMAND:
 			{
@@ -107,6 +112,23 @@ LRESULT CALLBACK MainWndProc(HWND hWnd,  UINT msg, WPARAM wParam, LPARAM lParam)
 							}
 						return 0;
 					}
+
+					case IDC_OPEN:
+						ZeroMemory(&ofn, sizeof(ofn));
+
+						ofn.lStructSize = sizeof(ofn); // SEE NOTE BELOW
+						ofn.hwndOwner = hWnd;
+						ofn.lpstrFilter = "Text Files (*.txt)\0.txt\0All Files (*.*)\0*.*\0";
+						ofn.lpstrFile = szFileName;
+						ofn.nMaxFile = MAX_PATH;
+						ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+						ofn.lpstrDefExt = "txt";
+
+						if(GetOpenFileName(&ofn))
+						{
+							LoadTextFileToEdit( hWnd, szFileName);
+						}
+					break;
 				}
 				break;
 			}
@@ -141,7 +163,7 @@ LRESULT CALLBACK MainWndProc(HWND hWnd,  UINT msg, WPARAM wParam, LPARAM lParam)
 
 			case WM_DESTROY:
 			{
-				DestroyWindow(g_hToolbar);
+				DestroyWindow(hWnd);
 				PostQuitMessage(0);
 				return 0;
 			}
@@ -152,6 +174,8 @@ LRESULT CALLBACK MainWndProc(HWND hWnd,  UINT msg, WPARAM wParam, LPARAM lParam)
 
 BOOL CALLBACK ToolDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {
+
+
     switch(Message)
     {
         case WM_COMMAND:
@@ -166,39 +190,124 @@ BOOL CALLBACK ToolDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
                         MB_OK | MB_ICONEXCLAMATION);
                 break;
                 case IDC_CLOSE_SETT:
+					GetDlgItemText(hWnd, IDC_BAR1_TXT, (LPTSTR)StimSetup.bar1offset, 9);
+					GetDlgItemText(hWnd, IDC_BAR2_TXT, (LPTSTR)StimSetup.bar2offset, 9);
+					GetDlgItemText(hWnd, IDC_BAR3_TXT, (LPTSTR)StimSetup.bar3offset, 9);
+					GetDlgItemText(hWnd, IDC_BAR4_TXT, (LPTSTR)StimSetup.bar4offset, 9);
+					GetDlgItemText(hWnd, IDC_BAR5_TXT, (LPTSTR)StimSetup.bar5offset, 9);
+					GetDlgItemText(hWnd, IDC_BAR6_TXT, (LPTSTR)StimSetup.bar6offset, 9);
+					GetDlgItemText(hWnd, IDC_LSB_AR_TXT, (LPTSTR)StimSetup.lsbAddrReg, 9);
+					GetDlgItemText(hWnd, IDC_MSB_AR_TXT, (LPTSTR)StimSetup.msbAddrReg, 9);
+					GetDlgItemText(hWnd, IDC_MSG_TXT, (LPTSTR)StimSetup.msgDataReg, 9);
+					GetDlgItemText(hWnd, IDC_VECT_QNTY_TXT, (LPTSTR)StimSetup.vectQnty, 9);
+
+					if (checkVectors(StimSetup, hWnd)) break;
+
 					DestroyWindow(hWnd);
                 break;
                 case IDC_BAR1_EN:
-					SendDlgItemMessage(hWnd, IDC_BAR1_TXT, EM_SETREADONLY, check1, 0);
-                	check1 = ~ check1;
-                	SendDlgItemMessage(hWnd, IDC_BAR1_EN, BM_SETCHECK, check1, 0);
-					GetDlgItemText(hWnd, IDC_BAR1_TXT, barAddr1, 8);
+                	StimSetup.bar1Ena = ~ StimSetup.bar1Ena;
+					SendDlgItemMessage(hWnd, IDC_BAR1_TXT, EM_SETREADONLY,~StimSetup.bar1Ena, 0);
+                	SendDlgItemMessage(hWnd, IDC_BAR1_EN, BM_SETCHECK,StimSetup.bar1Ena, 0);
 				break;
                 case IDC_BAR2_EN:
-                	check2 = ~ check2;
-                	SendDlgItemMessage(hWnd, IDC_BAR2_EN, BM_SETCHECK, check2, 0);
+                	StimSetup.bar2Ena = ~ StimSetup.bar2Ena;
+					SendDlgItemMessage(hWnd, IDC_BAR2_TXT, EM_SETREADONLY,~StimSetup.bar2Ena, 0);
+                	SendDlgItemMessage(hWnd, IDC_BAR2_EN, BM_SETCHECK, StimSetup.bar2Ena, 0);
 				break;
                 case IDC_BAR3_EN:
-                	check3 = ~ check3;
-                	SendDlgItemMessage(hWnd, IDC_BAR3_EN, BM_SETCHECK, check3, 0);
+                	StimSetup.bar3Ena = ~ StimSetup.bar3Ena;
+					SendDlgItemMessage(hWnd, IDC_BAR3_TXT, EM_SETREADONLY,~StimSetup.bar3Ena, 0);
+                	SendDlgItemMessage(hWnd, IDC_BAR3_EN, BM_SETCHECK, StimSetup.bar3Ena, 0);
 				break;
                 case IDC_BAR4_EN:
-                	check4 = ~ check4;
-                	SendDlgItemMessage(hWnd, IDC_BAR4_EN, BM_SETCHECK, check4, 0);
+                	StimSetup.bar4Ena = ~ StimSetup.bar4Ena;
+					SendDlgItemMessage(hWnd, IDC_BAR4_TXT, EM_SETREADONLY,~StimSetup.bar4Ena, 0);
+                	SendDlgItemMessage(hWnd, IDC_BAR4_EN, BM_SETCHECK, StimSetup.bar4Ena, 0);
 				break;
                 case IDC_BAR5_EN:
-                	check5 = ~ check5;
-                	SendDlgItemMessage(hWnd, IDC_BAR5_EN, BM_SETCHECK, check5, 0);
+                	StimSetup.bar5Ena = ~ StimSetup.bar5Ena;
+					SendDlgItemMessage(hWnd, IDC_BAR5_TXT, EM_SETREADONLY,~StimSetup.bar5Ena, 0);
+                	SendDlgItemMessage(hWnd, IDC_BAR5_EN, BM_SETCHECK, StimSetup.bar5Ena, 0);
 				break;
                 case IDC_BAR6_EN:
-                	check6 = ~ check6;
-                	SendDlgItemMessage(hWnd, IDC_BAR6_EN, BM_SETCHECK, check6, 0);
+                	StimSetup.bar6Ena = ~ StimSetup.bar6Ena;
+					SendDlgItemMessage(hWnd, IDC_BAR6_TXT, EM_SETREADONLY,~StimSetup.bar6Ena, 0);
+                	SendDlgItemMessage(hWnd, IDC_BAR6_EN, BM_SETCHECK, StimSetup.bar6Ena, 0);
+				break;
+                case IDC_INT_ENA:
+                	StimSetup.intEna = ~ StimSetup.intEna;
+					SendDlgItemMessage(hWnd, IDC_LSB_AR_TXT, EM_SETREADONLY,~StimSetup.intEna, 0);
+					SendDlgItemMessage(hWnd, IDC_MSB_AR_TXT, EM_SETREADONLY,~StimSetup.intEna, 0);
+					SendDlgItemMessage(hWnd, IDC_MSG_TXT, EM_SETREADONLY,~StimSetup.intEna, 0);
+                	SendDlgItemMessage(hWnd, IDC_INT_ENA, BM_SETCHECK, StimSetup.intEna, 0);
+				break;
+                case IDC_WR16_ENA:
+                	StimSetup.W16Ena = ~ StimSetup.W16Ena;
+                	SendDlgItemMessage(hWnd, IDC_WR16_ENA, BM_SETCHECK, StimSetup.W16Ena, 0);
+				break;
+                case IDC_WR32_ENA:
+                	StimSetup.W32Ena = ~ StimSetup.W32Ena;
+                	SendDlgItemMessage(hWnd, IDC_WR32_ENA, BM_SETCHECK, StimSetup.W32Ena, 0);
+				break;
+                case IDC_WR8_ENA:
+                	StimSetup.W8Ena = ~ StimSetup.W8Ena;
+                	SendDlgItemMessage(hWnd, IDC_WR8_ENA, BM_SETCHECK, StimSetup.W8Ena, 0);
+				break;
+                case IDC_WRBR_ENA:
+                	StimSetup.WBrEna = ~ StimSetup.WBrEna;
+                	SendDlgItemMessage(hWnd, IDC_WRBR_ENA, BM_SETCHECK, StimSetup.WBrEna, 0);
+				break;
+                case IDC_CH1_ENA:
+                	StimSetup.ch1Ena = ~ StimSetup.ch1Ena;
+                	SendDlgItemMessage(hWnd, IDC_CH1_ENA, BM_SETCHECK, StimSetup.ch1Ena, 0);
+				break;
+                case IDC_CH2_ENA:
+                	StimSetup.ch2Ena = ~ StimSetup.ch2Ena;
+                	SendDlgItemMessage(hWnd, IDC_CH2_ENA, BM_SETCHECK, StimSetup.ch2Ena, 0);
 				break;
 
             }
-        break;
+			break;
+		case WM_SHOWWINDOW :
+		{
+			char *pText = &StimSetup.bar1offset[0];
+			int *pNum = &StimSetup.bar1Ena;
+			for (int elNum = IDC_BAR1_TXT; elNum <= IDC_VECT_QNTY_TXT; elNum ++){
+				SendDlgItemMessage(hWnd,elNum,EM_SETLIMITTEXT,8,0);
+				SetDlgItemText(hWnd, elNum, (LPCTSTR)pText);
+				pText = pText + 9;
+				//tmp++;
+
+			}
+
+			SendDlgItemMessage(hWnd, IDC_BAR1_TXT, EM_SETREADONLY,~StimSetup.bar1Ena, 0);
+			SendDlgItemMessage(hWnd, IDC_BAR2_TXT, EM_SETREADONLY,~StimSetup.bar2Ena, 0);
+			SendDlgItemMessage(hWnd, IDC_BAR3_TXT, EM_SETREADONLY,~StimSetup.bar3Ena, 0);
+			SendDlgItemMessage(hWnd, IDC_BAR4_TXT, EM_SETREADONLY,~StimSetup.bar4Ena, 0);
+			SendDlgItemMessage(hWnd, IDC_BAR5_TXT, EM_SETREADONLY,~StimSetup.bar5Ena, 0);
+			SendDlgItemMessage(hWnd, IDC_BAR6_TXT, EM_SETREADONLY,~StimSetup.bar6Ena, 0);
+
+			SendDlgItemMessage(hWnd, IDC_LSB_AR_TXT, EM_SETREADONLY,~StimSetup.intEna, 0);
+			SendDlgItemMessage(hWnd, IDC_MSB_AR_TXT, EM_SETREADONLY,~StimSetup.intEna, 0);
+			SendDlgItemMessage(hWnd, IDC_MSG_TXT, EM_SETREADONLY,~StimSetup.intEna, 0);
+
+			for (int elNum = IDC_BAR1_EN; elNum <= IDC_CH2_ENA; elNum ++){
+				SendDlgItemMessage(hWnd, elNum, BM_SETCHECK,*pNum, 0);
+				pNum ++;
+			}
+			//SendDlgItemMessage(hWnd, IDC_BAR1_EN, BM_SETCHECK,StimSetup.bar1Ena, 0);
+			//SendDlgItemMessage(hWnd, IDC_BAR2_EN, BM_SETCHECK,StimSetup.bar2Ena, 0);
+			//SendDlgItemMessage(hWnd, IDC_BAR3_EN, BM_SETCHECK,StimSetup.bar3Ena, 0);
+			//SendDlgItemMessage(hWnd, IDC_BAR4_EN, BM_SETCHECK,StimSetup.bar4Ena, 0);
+			//SendDlgItemMessage(hWnd, IDC_BAR5_EN, BM_SETCHECK,StimSetup.bar5Ena, 0);
+			//SendDlgItemMessage(hWnd, IDC_BAR6_EN, BM_SETCHECK,StimSetup.bar6Ena, 0);
+
+			break;
+		}
         default:
             return FALSE;
+            break;
     }
     return TRUE;
 }

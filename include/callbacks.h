@@ -2,6 +2,7 @@
 #define CALLBACKS_H
 
 #include <windows.h>
+//#include "vectors.h"
 
 // Window procedure for our main window.
 LRESULT CALLBACK MainWndProc(HWND hWnd,  UINT msg, WPARAM wParam, LPARAM lParam);
